@@ -27,23 +27,23 @@ Fragment* populateNextFragment(std::ifstream& aInputStream)
 		switch (aFragmentLineNum)
 		{
 		case 1:
-			aFragment->aSeqId = new char[line.length() + 1];
-			strcpy(aFragment->aSeqId, line.c_str());
+			aFragment->_seqId = new char[line.length() + 1];
+			strcpy(aFragment->_seqId, line.c_str());
 			break;
 		case 2:
-			aFragment->aRawSequence = new char[line.length() + 1];
-			strcpy(aFragment->aRawSequence, line.c_str());
+			aFragment->_rawSequence = new char[line.length() + 1];
+			strcpy(aFragment->_rawSequence, line.c_str());
 			break;
 		case 3:
 			break;
 		case 4:
-			aFragment->aQualityValue = new char[line.length() + 1];
-			strcpy(aFragment->aQualityValue, line.c_str());
+			aFragment->_qualityValue = new char[line.length() + 1];
+			strcpy(aFragment->_qualityValue, line.c_str());
 			break;
 		}
 	}
 
-	if (aFragment && aFragment->aSeqId && aFragment->aRawSequence && aFragment->aQualityValue)
+	if (aFragment && aFragment->_seqId && aFragment->_rawSequence && aFragment->_qualityValue)
 	{
 		//Only want to return complete fragments
 		return aFragment;
@@ -110,18 +110,25 @@ int main()
 	cout << aFragment->aRawSequence;
 	*/
 
-	vector<Fragment*> aFragmentVector;
+	std::multiset<FragmentPair*> aFragmentPairSet;
 
 	while (!aInputStream.eof())
 	{
 		Fragment* aFragment1 = populateNextFragment(aInputStream);
-		if (aFragment1)
+		Fragment* aFragment2 = populateNextFragment(aInputStream);
+
+		if (aFragment1 && aFragment2)
 		{
-			aFragmentVector.push_back(aFragment1);
+			FragmentPair* aFragmentPair = new FragmentPair();
+			
+			aFragmentPair->_fragment1 = aFragment1;
+			aFragmentPair->_fragment2 = aFragment2;
+
+			aFragmentPairSet.insert(aFragmentPair);
 		}
 	}
 
-	cout << aFragmentVector.size();
+	cout << aFragmentPairSet.size();
 
 	aInputStream.close();
 }

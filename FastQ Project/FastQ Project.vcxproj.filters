@@ -5,10 +5,16 @@
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Quality.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="Fragment.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Quality.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
