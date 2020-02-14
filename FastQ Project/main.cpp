@@ -110,7 +110,8 @@ int main()
 	cout << aFragment->aRawSequence;
 	*/
 
-	std::multiset<FragmentPair*> aFragmentPairSet;
+	auto comparitor = [](FragmentPair* a, FragmentPair* b) { return *a < *b; };
+	std::multiset<FragmentPair*, decltype(comparitor)> aFragmentPairSet(comparitor);
 
 	while (!aInputStream.eof())
 	{
@@ -128,9 +129,16 @@ int main()
 		}
 	}
 
-	cout << aFragmentPairSet.size();
+	cout << "Multiset constructed. Size: " << aFragmentPairSet.size() << "\n";
 
 	aInputStream.close();
+
+	for (std::multiset<FragmentPair*>::const_iterator i = aFragmentPairSet.begin(), end(aFragmentPairSet.end()); i != end; ++i)
+	{
+		
+		cout << "Average quality: " << (**i).calculateAverageQuality().toInt() << "\n";
+	}
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

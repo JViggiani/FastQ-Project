@@ -11,7 +11,8 @@ struct Fragment
 
 	Quality calculateQuality() 
 	{
-		return Quality(_qualityValue);
+		Quality aQuality(_qualityValue);
+		return aQuality;
 	}
 };
 
@@ -20,14 +21,19 @@ struct FragmentPair
 	Fragment* _fragment1;
 	Fragment* _fragment2;
 
-	bool operator<(const FragmentPair &input) 
+	Quality calculateAverageQuality() const
+	{
+		return (this->_fragment1->calculateQuality() + this->_fragment2->calculateQuality()) / 2;
+	}
+
+	bool operator<(const FragmentPair input)
 	{
 		//calculate this average
-		Quality thisAverageQuality = (this->_fragment1->calculateQuality() + this->_fragment2->calculateQuality()) / 2;
+		//Quality thisAverageQuality = 
 
 		//calculate that average
-		Quality thatAverageQuality = (input._fragment1->calculateQuality() + input._fragment2->calculateQuality()) / 2;
+		//Quality thatAverageQuality = (input._fragment1->calculateQuality() + input._fragment2->calculateQuality()) / 2;
 
-		return (thisAverageQuality < thatAverageQuality);
+		return (this->calculateAverageQuality() < input.calculateAverageQuality());
 	}
 };

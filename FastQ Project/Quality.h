@@ -17,7 +17,7 @@ public:
 	 * Stops as soon as it finds a non-digit character.
 	 * Trailing zeros will eventually get removed.
 	 */
-	Quality(const char* integer);
+	Quality(char* integer);
 
 	Quality(const string& integer);
 
@@ -42,6 +42,8 @@ public:
 	char* toCharArray() const;
 	/* Returns the internal Quality as a string */
 	string toString() const;
+	/* Returns the internal Quality as an int. Returns 0 if it is too big to return */
+	unsigned long long int toInt() const;
 
 	/* Adds the Quality given as an argument to the internal Quality
 	 * and returns the result as a string.
