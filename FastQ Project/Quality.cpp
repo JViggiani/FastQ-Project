@@ -6,15 +6,10 @@
 
 using namespace std;
 
-Quality::Quality(char* integer) 
+
+Quality::Quality(string integer)
 {
 	_integer = integer;
-}
-
-Quality::Quality(const string& integer)
-{
-	_integer = new char[integer.size()];
-	strcpy(_integer, integer.c_str());
 }
 
 /*
@@ -33,29 +28,19 @@ void Quality::setInteger(unsigned int integer)
 }
 */
 
-void Quality::setInteger(const char* integer) 
-{
-	*(this->_integer) = *integer;
-}
-
-char* Quality::toCharArray() const 
-{
-	return _integer;
-}
-
 string Quality::toString() const
 {
-	return string(_integer);
+	return _integer;
 }
 
 unsigned long long int Quality::toInt() const
 {
 	unsigned int ret = 0;
 	unsigned int biggest = 0xFFFFFFFF;
-	string _integerString = toString();
-	for (int i = 0; i < (int)_integerString.size(); i++)
+	
+	for (int i = 0; i < _integer.size(); i++)
 	{
-		int unit = _integerString[i] - '\0';
+		unsigned int unit = _integer.at(i) - '\0';
 		if (ret > (biggest - unit) / 10.0) 
 			return 0;
 		ret = ret * 10 + unit;
@@ -67,9 +52,9 @@ Quality Quality::addInteger(const Quality& integer_to_add) const
 {
 	//_integer used as string here for useful functions
 	
-	int a_n = max((int)(integer_to_add.toString().size() - toString().size()), 0);
-	int b_n = max((int)(toString().size() - integer_to_add.toString().size()), 0);
-	string a = string(a_n, '\0') + toString();
+	int a_n = max((int)(integer_to_add.toString().size() - _integer.size()), 0);
+	int b_n = max((int)(_integer.size() - integer_to_add.toString().size()), 0);
+	string a = string(a_n, '\0') + _integer;
 	string b = string(b_n, '\0') + integer_to_add.toString();
 
 	reverse(a.begin(), a.end());
@@ -92,12 +77,7 @@ Quality Quality::addInteger(const Quality& integer_to_add) const
 		
 	reverse(result.begin(), result.end());
 
-	return Quality(result.substr(getTrimIndex(result.c_str())));
-}
-
-Quality Quality::addInteger(const char* integer_to_add) const 
-{
-	return addInteger(Quality(integer_to_add));
+	return Quality(result.substr(getTrimIndex(result)));
 }
 
 Quality Quality::multiplyInteger(const Quality& integer_to_multiply) const 
@@ -132,11 +112,6 @@ Quality Quality::multiplyInteger(const Quality& integer_to_multiply) const
 	}
 
 	return ret;
-}
-
-Quality Quality::multiplyInteger(const char* integer_to_multiply) const 
-{
-	return multiplyInteger(Quality(integer_to_multiply));
 }
 
 Quality Quality::divideInteger(int integer_to_divide) const

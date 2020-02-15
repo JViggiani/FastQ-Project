@@ -24,6 +24,8 @@ Fragment* populateNextFragment(std::ifstream& aInputStream)
 			continue;
 		}
 
+		//JOSH need to NULL terminate your char arrays...
+
 		switch (aFragmentLineNum)
 		{
 		case 1:

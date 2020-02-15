@@ -8,38 +8,11 @@
 class Quality 
 {
 private:
-	char* _integer;
+	string _integer;
 public:
-	/* Constructs a Quality representation of the integer given as an argument */
-	Quality(unsigned int integer);
 
-	/* Parses the string given as an argument looking for an integer.
-	 * Stops as soon as it finds a non-digit character.
-	 * Trailing zeros will eventually get removed.
-	 */
-	Quality(char* integer);
+	Quality(string integer);
 
-	Quality(const string& integer);
-
-	/* Constructs a Quality representation of the integer given as an argument
-	 * and assigns it to the internal representation of the Quality.
-	 */
-	//void setInteger(unsigned int integer);
-
-	/* Parses the string given as an argument looking for an integer and assigns it to
-	 * the internal representation of the Quality.
-	 * Stops as soon as it finds a non-digit character.
-	 * Trailing zeros will eventually get removed.
-	 */
-	void setInteger(const char* integer);
-
-	/* Returns 0 if the value of the internal Quality won't fit in 32 bits.
-	 * Otherwise it returns the integer values.
-	 */
-	//unsigned int getIntValue() const;
-
-	/* Returns the internal Quality as a char array */
-	char* toCharArray() const;
 	/* Returns the internal Quality as a string */
 	string toString() const;
 	/* Returns the internal Quality as an int. Returns 0 if it is too big to return */
@@ -50,11 +23,6 @@ public:
 	 */
 	Quality addInteger(const Quality& integer_to_add) const;
 
-	/* Adds the integer represented by the string given as an argument to the internal
-	 * Quality and returns the result as a string.
-	 */
-	Quality addInteger(const char* integer_to_add) const;
-
 	/* Multiplies the Quality given as an argument by the internal Quality
 	 * and returns the result as a string.
 	 */
@@ -63,7 +31,7 @@ public:
 	/* Multiplies the integer represented by the string given as an argument by the internal
 	 * Quality and returns the result as a string.
 	 */
-	Quality multiplyInteger(const char* integer_to_multiply) const;
+	Quality multiplyInteger(const string& integer_to_multiply) const;
 
 	Quality divideInteger(int integer_to_divide) const;
 
