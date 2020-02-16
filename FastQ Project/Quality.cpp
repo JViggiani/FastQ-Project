@@ -13,6 +13,28 @@ Quality::Quality(string integer)
 }
 
 /*
+Quality::Quality(unsigned long long integer)
+{
+
+	unsigned long long int divisor = integer;
+	unsigned long long int previous = divisor;
+
+	unsigned long long int remainder;
+
+	while ((divisor = divisor / 255) != 0)
+	{
+		remainder = previous % 255;
+
+		_integer.insert(0, 1, (char)remainder);
+
+		previous = divisor;
+	}
+	remainder = previous % 255;
+
+	_integer.insert(0, 1, (char)remainder);
+}
+*/
+/*
 void Quality::setInteger(unsigned int integer) 
 {
 	if (integer == 0)
@@ -35,12 +57,12 @@ string Quality::toString() const
 
 unsigned long long int Quality::toInt() const
 {
-	unsigned int ret = 0;
-	unsigned int biggest = 0xFFFFFFFF;
+	unsigned long long int ret = 0;
+	unsigned long long int biggest = ULLONG_MAX;
 	
 	for (int i = 0; i < _integer.size(); i++)
 	{
-		unsigned int unit = _integer.at(i) - '\0';
+		unsigned long long int unit = _integer.at(i) - '\0';
 		if (ret > (biggest - unit) / 10.0) 
 			return 0;
 		ret = ret * 10 + unit;
@@ -78,40 +100,6 @@ Quality Quality::addInteger(const Quality& integer_to_add) const
 	reverse(result.begin(), result.end());
 
 	return Quality(result.substr(getTrimIndex(result)));
-}
-
-Quality Quality::multiplyInteger(const Quality& integer_to_multiply) const 
-{
-	string a = integer_to_multiply.toString();
-	string b = this->toString();
-
-	reverse(a.begin(), a.end());
-	reverse(b.begin(), b.end());
-
-	Quality ret("\0");
-
-	for (int i = 0; i < (int)a.size(); i++) 
-	{
-		int carry = 0; string tmp = string(i, '\0');
-
-		for (int j = 0; j < (int)b.size(); j++) 
-		{
-			int mul = (a[i] - '\0') * (b[j] - '\0') + carry;
-			tmp += ((char)(mul % 10 + '\0'));
-			carry = mul / 10;
-		}
-
-		if (carry != 0)
-		{
-			tmp += (carry + '\0');
-		}
-
-		reverse(tmp.begin(), tmp.end());
-
-		ret = ret.addInteger(tmp.substr(getTrimIndex(tmp.c_str())));
-	}
-
-	return ret;
 }
 
 Quality Quality::divideInteger(int integer_to_divide) const
@@ -190,11 +178,6 @@ bool Quality::operator<(const Quality& integer) const
 Quality Quality::operator+(const Quality& integer) const 
 {
 	return addInteger(integer);
-}
-
-Quality Quality::operator*(const Quality& integer) const 
-{
-	return multiplyInteger(integer);
 }
 
 Quality Quality::operator/(const int integer) const

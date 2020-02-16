@@ -3,8 +3,6 @@
 #include <iostream>
 #include "pch.h"
 
-//JOSH go through these and cull the unused functions
-
 class Quality 
 {
 private:
@@ -12,6 +10,8 @@ private:
 public:
 
 	Quality(string integer);
+
+	//Quality(unsigned long long integer);
 
 	/* Returns the internal Quality as a string */
 	string toString() const;
@@ -22,16 +22,6 @@ public:
 	 * and returns the result as a string.
 	 */
 	Quality addInteger(const Quality& integer_to_add) const;
-
-	/* Multiplies the Quality given as an argument by the internal Quality
-	 * and returns the result as a string.
-	 */
-	Quality multiplyInteger(const Quality& integer_to_multiply) const;
-
-	/* Multiplies the integer represented by the string given as an argument by the internal
-	 * Quality and returns the result as a string.
-	 */
-	Quality multiplyInteger(const string& integer_to_multiply) const;
 
 	Quality divideInteger(int integer_to_divide) const;
 

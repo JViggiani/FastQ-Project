@@ -7,51 +7,7 @@
 
 #include "Fragment.h"
 
-Fragment* populateNextFragment(std::ifstream& aInputStream)
-{
-	Fragment* aFragment = new Fragment();
-	int aFragmentLineNum = 1;
-	for (string line; 
-		aFragmentLineNum <= 4 && getline(aInputStream, line) && !aInputStream.eof(); 
-		++aFragmentLineNum)
-	{
-		cout << line << "\n";
 
-		//File may contain blank lines, added for some resilience
-		if (line.size() == 0)
-		{
-			--aFragmentLineNum;
-			continue;
-		}
-
-		//JOSH need to NULL terminate your char arrays...
-
-		switch (aFragmentLineNum)
-		{
-		case 1:
-			aFragment->_seqId = new char[line.length() + 1];
-			strcpy(aFragment->_seqId, line.c_str());
-			break;
-		case 2:
-			aFragment->_rawSequence = new char[line.length() + 1];
-			strcpy(aFragment->_rawSequence, line.c_str());
-			break;
-		case 3:
-			break;
-		case 4:
-			aFragment->_qualityValue = new char[line.length() + 1];
-			strcpy(aFragment->_qualityValue, line.c_str());
-			break;
-		}
-	}
-
-	if (aFragment && aFragment->_seqId && aFragment->_rawSequence && aFragment->_qualityValue)
-	{
-		//Only want to return complete fragments
-		return aFragment;
-	}
-	else return nullptr;
-}
 
 //This is not neccessarily a fixed length in real data but it is 
 
@@ -90,7 +46,7 @@ int main()
 
 	string aFileName = "data/tiny-test.fastq";
 
-	std::ifstream aInputStream(aFileName);
+	CmdProcessFragment aFragmentProcessor("data/tiny-test.fastq");
 
 	//string aLine;
 
@@ -114,11 +70,11 @@ int main()
 
 	auto comparitor = [](FragmentPair* a, FragmentPair* b) { return *a < *b; };
 	std::multiset<FragmentPair*, decltype(comparitor)> aFragmentPairSet(comparitor);
-
-	while (!aInputStream.eof())
+	
+	while (!aFragmentProcessor.eof())
 	{
-		Fragment* aFragment1 = populateNextFragment(aInputStream);
-		Fragment* aFragment2 = populateNextFragment(aInputStream);
+		Fragment* aFragment1 = aFragmentProcessor.populateNextFragment();
+		Fragment* aFragment2 = aFragmentProcessor.populateNextFragment();
 
 		if (aFragment1 && aFragment2)
 		{
@@ -133,23 +89,11 @@ int main()
 
 	cout << "Multiset constructed. Size: " << aFragmentPairSet.size() << "\n";
 
-	aInputStream.close();
+	aFragmentProcessor.close();
 
 	for (std::multiset<FragmentPair*>::const_iterator i = aFragmentPairSet.begin(), end(aFragmentPairSet.end()); i != end; ++i)
 	{
-		
 		cout << "Average quality: " << (**i).calculateAverageQuality().toInt() << "\n";
 	}
 
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
