@@ -60,20 +60,53 @@ TEST(Quality, CanCompareQualitySameLength5)
 
 TEST(Quality, CanCompareQualitySameLength6)
 {
-	std::string aQualityString = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+	std::string aQualityString = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 	for (int i = 0; i < aQualityString.size() - 1; ++i)
 	{
-		char aQualityString1 = aQualityString.at(i);
-		char aQualityString2 = aQualityString.at(i+1);
+		string aQualityString1 = aQualityString.substr(i, 1);
+		string aQualityString2 = aQualityString.substr(i + 1, 1);
 		
-		Quality aQuality1(&aQualityString1);
-		Quality aQuality2(&aQualityString2);
+		Quality aQuality1(aQualityString1);
+		Quality aQuality2(aQualityString2);
 
 		bool isLess = (aQuality1 < aQuality2);
 
 		ASSERT_TRUE(isLess);
 	}
+}
+
+TEST(Quality, CanCompareQualityDifferentLength1)
+{
+	std::string aQualityString1 = "#1=DBDFDHHHHGJIJJJJJIIIJI";
+	std::string aQualityString2 = "CCCFFFFFHHHHHJIIIJJJIJ#4A";
+
+	Quality aQuality1(aQualityString1);
+	Quality aQuality2(aQualityString2);
+
+	ASSERT_TRUE(aQuality1 < aQuality2);
+}
+
+TEST(Quality, CanCompareQualityDifferentLength2)
+{
+	std::string aQualityString1 = "#1=DBDFDHHHHGJIJJJJJIIIJI";
+	std::string aQualityString2 = "@BCDDFEFHHDHHJJJJJIJJIJJJ";
+
+	Quality aQuality1(aQualityString1);
+	Quality aQuality2(aQualityString2);
+
+	ASSERT_TRUE(aQuality1 < aQuality2);
+}
+
+TEST(Quality, CanCompareQualityDifferentLength3)
+{
+	std::string aQualityString1 = "#1=DBDFDHHHHGJIJJJJJIIIJI";
+	std::string aQualityString2 = "@@@FFFFEHFHHHJJCGDHIIECD@";
+
+	Quality aQuality1(aQualityString1);
+	Quality aQuality2(aQualityString2);
+
+	ASSERT_TRUE(aQuality1 < aQuality2);
 }
 
 TEST(Quality, CanGetAsInt1)
@@ -85,9 +118,7 @@ TEST(Quality, CanGetAsInt1)
 		int j = i + 1;
 		
 		string aQualityString1 = aQualityString.substr(i, 1);
-		//aQualityString1.push_back(aQualityString.at(i));
 		string aQualityString2 = aQualityString.substr(i+1, 1);
-		//aQualityString.push_back(aQualityString.at(j));
 
 		if (aQualityString1.size() == 1 && aQualityString2.size() == 1)
 		{

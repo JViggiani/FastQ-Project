@@ -32,12 +32,21 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Josh\source\repos\FastQ-Project\FastQ Project\Source;C:\Users\Josh\source\repos\FastQ-Project\FastQ Project\Headers;$(IncludePath)</IncludePath>
+    <SourcePath>C:\Users\Josh\source\repos\FastQ-Project\FastQ Project\Source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="CmdProcessFragment.h" />
+    <ClInclude Include="CmdReadFragment.h" />
+    <ClInclude Include="CmdWriteFragment.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Quality.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmdReadFragment.cpp" />
+    <ClCompile Include="CmdWriteFragment.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -9,7 +9,7 @@ private:
 	string _integer;
 public:
 
-	Quality(string integer);
+	Quality(const string& integer);
 
 	//Quality(unsigned long long integer);
 
@@ -23,7 +23,7 @@ public:
 	 */
 	Quality addInteger(const Quality& integer_to_add) const;
 
-	Quality divideInteger(int integer_to_divide) const;
+	Quality divideInteger(const int& integer_to_divide) const;
 
 	/* Returns the index of the first non-zero digit in the string given as an argument.
 	 * This function is used to trim trailing zeros from a string representation of an integer.
@@ -35,6 +35,7 @@ public:
 	bool operator==(const Quality& integer) const;
 
 	bool operator<(const Quality& integer) const;
+	bool operator>(const Quality& integer) const;
 
 	Quality operator+(const Quality& integer) const;
 

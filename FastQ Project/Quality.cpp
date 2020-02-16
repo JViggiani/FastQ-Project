@@ -7,7 +7,7 @@
 using namespace std;
 
 
-Quality::Quality(string integer)
+Quality::Quality(const string& integer)
 {
 	_integer = integer;
 }
@@ -102,7 +102,7 @@ Quality Quality::addInteger(const Quality& integer_to_add) const
 	return Quality(result.substr(getTrimIndex(result)));
 }
 
-Quality Quality::divideInteger(int integer_to_divide) const
+Quality Quality::divideInteger(const int& integer_to_divide) const
 {
 	// As result can be very large store it in string 
 	string ans;
@@ -173,6 +173,28 @@ bool Quality::operator<(const Quality& integer) const
 	}
 		
 	return aQualityStringLhs.size() < aQualityStringRhs.size();
+}
+
+bool Quality::operator>(const Quality& integer) const
+{
+	//this is lhs, input is rhs
+	string aQualityStringLhs = this->_integer;
+	string aQualityStringRhs = integer.toString();
+
+	if (toString().size() == integer.toString().size())
+	{
+		for (int i = 0; i < aQualityStringLhs.size(); ++i)
+		{
+			if ((int)aQualityStringLhs[i] > (int)aQualityStringRhs[i])
+			{
+				return true;
+			}
+		}
+		//if we get to here we have the same quality
+		return false;
+	}
+
+	return aQualityStringLhs.size() > aQualityStringRhs.size();
 }
 
 Quality Quality::operator+(const Quality& integer) const 
