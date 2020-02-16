@@ -8,7 +8,7 @@ std::shared_ptr<Fragment> CmdReadFragment::populateNextFragment()
 	std::shared_ptr<Fragment> aFragment(new Fragment());
 	int aFragmentLineNum = 1;
 	for (string line;
-		aFragmentLineNum <= 4 && getline(_inputStream, line) && !_inputStream.eof();
+		aFragmentLineNum <= 4 && getline(_iStream, line) && !_iStream.eof();
 		++aFragmentLineNum)
 	{
 		cout << line << "\n";

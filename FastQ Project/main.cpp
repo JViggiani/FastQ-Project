@@ -5,40 +5,33 @@
 
 #include "Fragment.h"
 #include "CmdReadFragment.h"
-#include "CmdWriteFragment.h"
+#include "CmdReadWriteFragment.h"
 
 int main()
 {
-	string aFileName = "data/big-test.fastq";
+	string aFileName = "data/tiny-test.fastq";
+	string output = "data/output.fastq";
 
-	CmdReadFragment aFragmentReader(aFileName);
+	remove(output.c_str());
+	remove("data/temp.fastq");
+
+	CmdReadFragment aFragmentReader;
+	aFragmentReader.getStream().open(aFileName);
+	CmdReadWriteFragment aFragmentWriter(output);
+	//aFragmentWriter.getStream().open(output, std::ofstream::trunc);
 
 	std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor> aFragmentPairSet;
-	
-	while (!aFragmentReader.eof())
+
+	while (!aFragmentReader.getStream().eof())
 	{
 		std::shared_ptr<FragmentPair> aFragmentPair = aFragmentReader.populateNextFragmentPair();
 		if (aFragmentPair)
 		{
-			aFragmentPairSet.insert(aFragmentPair);
+			aFragmentWriter.printFragmentPairToFileLowMemory(aFragmentPair);
 		}
 	}
 	
-	aFragmentReader.close();
-
-	/*
-	cout << "Multiset constructed. Size: " << aFragmentPairSet.size() << "\n";
-	for (std::multiset<FragmentPair*>::const_iterator i = aFragmentPairSet.begin(), end(aFragmentPairSet.end()); i != end; ++i)
-	{
-		cout << "Average quality: " << (**i).calculateAverageQuality().toInt() << "\n";
-	}
-	*/
-
-	string output = "data/output.fastq";
-
-	CmdWriteFragment aFragmentWriter(output);
-
-	aFragmentWriter.printDataToFile(aFragmentPairSet);
-
-	aFragmentWriter.close();
+	aFragmentReader.getStream().close();
+	aFragmentWriter.getStream().flush();
+	aFragmentWriter.getStream().close();
 }

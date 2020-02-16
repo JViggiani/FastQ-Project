@@ -12,24 +12,10 @@
 class CmdReadFragment : public CmdProcessFragment
 {
 public:
-	CmdReadFragment(const string& aFile)
-	{
-		_inputStream.open(aFile);
-	}
 
-	bool eof()
+	std::ifstream& getStream()
 	{
-		return _inputStream.eof();
-	}
-
-	void open(const string& aFile)
-	{
-		_inputStream.open(aFile);
-	}
-
-	void close()
-	{
-		_inputStream.close();
+		return _iStream;
 	}
 
 	std::shared_ptr<Fragment> populateNextFragment();
@@ -37,5 +23,5 @@ public:
 	std::shared_ptr<FragmentPair> populateNextFragmentPair();
 
 private:
-	std::ifstream _inputStream;
+	std::ifstream _iStream;
 };
