@@ -27,35 +27,53 @@ void CmdReadWriteFragment::printDataItemToFile(const std::shared_ptr<FragmentPai
 
 void CmdReadWriteFragment::printFragmentPairToFileLowMemory(const std::shared_ptr<FragmentPair>& aFragmentPair)
 {
-	std::filesystem::copy_file("data/output.fastq", "data/temp.fastq");
-	remove("data/output.fastq");
+	//std::filesystem::copy_file("data/output.fastq", "data/temp.fastq");
+	//remove("data/output.fastq");
+
+	_ioStream.open("data/temp.fastq");
 
 	CmdReadFragment aFragmentReader;
 
-	aFragmentReader.getStream().open("data/temp.fastq");
+	aFragmentReader.getStream().open("data/output_memory.fastq");
 
-	_ioStream.open("data/output.fastq");
+	bool hasWroteCurrentFragment = false;
 
-	//copy output to temp file, deleting contents (truncate mode)
 	while (!aFragmentReader.getStream().eof())
 	{
+		//JOSH problem is here. At the end of the file there are two new lines and so this gets executed at the end
 		std::shared_ptr<FragmentPair> aWrittenFragmentPair = aFragmentReader.populateNextFragmentPair();
-		if (!aWrittenFragmentPair.get())
+		
+		char c = aFragmentReader.getStream().peek(); //JOSH what is this at the end? newline?
+
+		if (!aWrittenFragmentPair.get()) //JOSH && file is not at the end?? 
+		{
+			//First item, just write the fragmentpair
+			printDataItemToFile(aFragmentPair);
+			hasWroteCurrentFragment = true;
+			break;
+		}
+
+		if ((!hasWroteCurrentFragment && *(aFragmentPair.get()) > *(aWrittenFragmentPair.get())))
 		{
 			printDataItemToFile(aFragmentPair);
+			//Want to only print written from here
+			hasWroteCurrentFragment = true;
+			printDataItemToFile(aWrittenFragmentPair);
 		}
 		else
 		{
-			if (aFragmentPair.get() < aWrittenFragmentPair.get())
+			printDataItemToFile(aWrittenFragmentPair);
+			if (!hasWroteCurrentFragment)
 			{
 				printDataItemToFile(aFragmentPair);
+				hasWroteCurrentFragment = true;
 			}
-			printDataItemToFile(aWrittenFragmentPair);
 		}
 	}
 
-	_ioStream.flush();
+	//_ioStream.flush();
 	_ioStream.close();
 	aFragmentReader.getStream().close();
-	int success = remove("data/temp.fastq");
+	int success = remove("data/output_memory.fastq");
+	std::filesystem::rename("data/temp.fastq", "data/output_memory.fastq");
 }

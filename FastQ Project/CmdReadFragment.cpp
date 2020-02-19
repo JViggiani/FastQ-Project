@@ -3,15 +3,13 @@
 
 std::shared_ptr<Fragment> CmdReadFragment::populateNextFragment()
 {
-	//Fragment* aFragment = new Fragment();
-
 	std::shared_ptr<Fragment> aFragment(new Fragment());
 	int aFragmentLineNum = 1;
 	for (string line;
 		aFragmentLineNum <= 4 && getline(_iStream, line) && !_iStream.eof();
 		++aFragmentLineNum)
 	{
-		cout << line << "\n";
+		//cout << line << "\n";
 
 		//File may contain blank lines, added for some resilience
 		if (line.size() == 0)
@@ -56,10 +54,21 @@ std::shared_ptr<FragmentPair> CmdReadFragment::populateNextFragmentPair()
 	{
 		std::shared_ptr<FragmentPair> aFragmentPair(new FragmentPair());
 
-		aFragmentPair->_fragment1 = std::move(aFragment1);
+		aFragmentPair->_fragment1 = std::move(aFragment1); //JOSH a better way?
 		aFragmentPair->_fragment2 = std::move(aFragment2);
 
 		return aFragmentPair;
 	}
-	else return nullptr;
+	else
+	{
+		string aFollowingLine;
+		getline(_iStream, aFollowingLine);
+		if (aFollowingLine == "\n")
+		{
+			//get rid of new lines
+			return populateNextFragmentPair();
+		}
+		else return nullptr;
+	}
+
 }
