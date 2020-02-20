@@ -5,10 +5,10 @@
 struct Fragment
 {
 	//char *_seqId;
-	std::shared_ptr<char> _seqId;
-	std::shared_ptr<char> _rawSequence;
+	std::unique_ptr<char> _seqId;
+	std::unique_ptr<char> _rawSequence;
 	//remember to append a + to line 3
-	std::shared_ptr<char> _qualityValue;
+	std::unique_ptr<char> _qualityValue;
 
 	Quality calculateQuality() 
 	{
@@ -19,25 +19,25 @@ struct Fragment
 
 struct FragmentPair
 {
-	std::shared_ptr<Fragment> _fragment1;
-	std::shared_ptr<Fragment> _fragment2;
+	std::unique_ptr<Fragment> _fragment1;
+	std::unique_ptr<Fragment> _fragment2;
 
 	Quality calculateAverageQuality() const
 	{
 		return (this->_fragment1->calculateQuality() + this->_fragment2->calculateQuality()) / 2;
 	}
 
-	bool operator<(const FragmentPair input)
+	bool operator<(const FragmentPair& input)
 	{
 		return (this->calculateAverageQuality() < input.calculateAverageQuality());
 	}
 
-	bool operator==(const FragmentPair input)
+	bool operator==(const FragmentPair& input)
 	{
 		return (this->calculateAverageQuality() == input.calculateAverageQuality());
 	}
 
-	bool operator>(const FragmentPair input)
+	bool operator>(const FragmentPair& input)
 	{
 		return (this->calculateAverageQuality() > input.calculateAverageQuality());
 	}
@@ -45,7 +45,7 @@ struct FragmentPair
 
 struct FragmentPairComparitor
 {
-	bool operator()(const shared_ptr<FragmentPair>& a, const shared_ptr<FragmentPair>& b)
+	bool operator()(const unique_ptr<FragmentPair>& a, const unique_ptr<FragmentPair>& b)
 	{
 		return *(a.get()) > *(b.get());
 	}

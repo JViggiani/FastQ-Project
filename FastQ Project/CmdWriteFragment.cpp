@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "CmdReadWriteFragment.h"
+#include "CmdWriteFragment.h"
 #include <filesystem>
 
 void CmdWriteFragment::initialiseFileOutput()
@@ -20,15 +20,15 @@ void CmdWriteFragment::initialiseFileOutput()
 	_ioStream.close();
 }
 
-void CmdWriteFragment::printDataSetToFile(const std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint)
+void CmdWriteFragment::printDataSetToFile(const std::multiset<std::unique_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint)
 {
-	for (auto item : aSetToPrint)
+	for (auto& item : aSetToPrint)
 	{
 		printFragmentPairToEndOfFile(item);
 	}
 }
 
-void CmdWriteFragment::printFragmentPairToEndOfFile(const std::shared_ptr<FragmentPair>& item)
+void CmdWriteFragment::printFragmentPairToEndOfFile(const std::unique_ptr<FragmentPair>& item)
 {
 	this->_ioStream << item->_fragment1->_seqId << "\n";
 	this->_ioStream << item->_fragment1->_rawSequence << "\n";
@@ -43,7 +43,7 @@ void CmdWriteFragment::printFragmentPairToEndOfFile(const std::shared_ptr<Fragme
 	this->_ioStream.flush();
 }
 
-void CmdWriteFragment::printAndOrderFragmentPairToFile(const std::shared_ptr<FragmentPair>& aFragmentPair)
+void CmdWriteFragment::printAndOrderFragmentPairToFile(const std::unique_ptr<FragmentPair>& aFragmentPair)
 {
 	_ioStream.open("data/temp.fastq");
 
@@ -55,7 +55,8 @@ void CmdWriteFragment::printAndOrderFragmentPairToFile(const std::shared_ptr<Fra
 
 	while (!aFragmentReader.getStream().eof())
 	{
-		std::shared_ptr<FragmentPair> aWrittenFragmentPair = aFragmentReader.populateNextFragmentPair();
+		std::unique_ptr<FragmentPair> aWrittenFragmentPair;
+		aFragmentReader.populateNextFragmentPair(aWrittenFragmentPair);
 		
 		char c = aFragmentReader.getStream().peek(); 
 

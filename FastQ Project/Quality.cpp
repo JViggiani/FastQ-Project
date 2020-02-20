@@ -12,44 +12,6 @@ Quality::Quality(const string& integer)
 	_integer = integer;
 }
 
-/*
-Quality::Quality(unsigned long long integer)
-{
-
-	unsigned long long int divisor = integer;
-	unsigned long long int previous = divisor;
-
-	unsigned long long int remainder;
-
-	while ((divisor = divisor / 255) != 0)
-	{
-		remainder = previous % 255;
-
-		_integer.insert(0, 1, (char)remainder);
-
-		previous = divisor;
-	}
-	remainder = previous % 255;
-
-	_integer.insert(0, 1, (char)remainder);
-}
-*/
-/*
-void Quality::setInteger(unsigned int integer) 
-{
-	if (integer == 0)
-	{
-		this->_integer = "0";
-	}
-
-	while (integer) 
-	{
-		this->_integer = (char)((integer % 10) + '0') + this->_integer;
-		integer /= 10;
-	}
-}
-*/
-
 string Quality::toString() const
 {
 	return _integer;

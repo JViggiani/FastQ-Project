@@ -18,9 +18,9 @@ public:
 		return _iStream;
 	}
 
-	std::shared_ptr<Fragment> populateNextFragment();
+	void populateNextFragment(std::unique_ptr<Fragment>& aFragmentPtr);
 
-	std::shared_ptr<FragmentPair> populateNextFragmentPair();
+	void populateNextFragmentPair(std::unique_ptr<FragmentPair>& aFragmentPairPtr);
 
 private:
 	std::ifstream _iStream;

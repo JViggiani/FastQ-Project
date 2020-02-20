@@ -39,8 +39,6 @@ public:
 
 	Quality operator+(const Quality& integer) const;
 
-	Quality operator*(const Quality& integer) const;
-
 	Quality operator/(const int integer) const;
 
 	friend ostream& operator<<(ostream& in, Quality& integer);

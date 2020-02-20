@@ -39,14 +39,14 @@
   <ItemGroup>
     <ClInclude Include="CmdProcessFragment.h" />
     <ClInclude Include="CmdReadFragment.h" />
-    <ClInclude Include="CmdReadWriteFragment.h" />
+    <ClInclude Include="CmdWriteFragment.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Quality.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmdReadFragment.cpp" />
-    <ClCompile Include="CmdReadWriteFragment.cpp" />
+    <ClCompile Include="CmdWriteFragment.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

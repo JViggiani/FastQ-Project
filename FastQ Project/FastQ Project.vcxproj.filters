@@ -13,7 +13,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="CmdReadWriteFragment.cpp">
+    <ClCompile Include="CmdWriteFragment.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,7 +33,7 @@
     <ClInclude Include="CmdProcessFragment.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="CmdReadWriteFragment.h">
+    <ClInclude Include="CmdWriteFragment.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,21 +2,22 @@
 
 #include "Fragment.h"
 #include "CmdReadFragment.h"
-#include "CmdReadWriteFragment.h"
+#include "CmdWriteFragment.h"
 
-void fast()
+void fast(const string& aInput)
 {
 	CmdReadFragment aFragmentReader;
-	aFragmentReader.getStream().open("data/tiny-test.fastq");
+	aFragmentReader.getStream().open(aInput.c_str());
 
-	std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor> aFragmentPairSet;
+	std::multiset<std::unique_ptr<FragmentPair>, FragmentPairComparitor> aFragmentPairSet;
 
 	while (!aFragmentReader.getStream().eof())
 	{
-		std::shared_ptr<FragmentPair> aFragmentPair = aFragmentReader.populateNextFragmentPair();
+		std::unique_ptr<FragmentPair> aFragmentPair;
+		aFragmentReader.populateNextFragmentPair(aFragmentPair);
 		if (aFragmentPair)
 		{
-			aFragmentPairSet.insert(aFragmentPair);
+			aFragmentPairSet.insert(std::move(aFragmentPair)); //JOSH can we change this from a move? probably not
 		}
 	}
 	aFragmentReader.getStream().close();
@@ -34,20 +35,20 @@ void fast()
 	aFragmentWriter.getStream().close();
 }
 
-void lowMemory()
+void lowMemory(const string& aInput)
 {
-	string aInput = "data/tiny-test.fastq";
 	string aOutput = "data/output_memory.fastq";
 
 	CmdReadFragment aFragmentReader;
-	aFragmentReader.getStream().open(aInput);
+	aFragmentReader.getStream().open(aInput.c_str());
 
 	CmdWriteFragment aFragmentWriter(aOutput);
 	aFragmentWriter.initialiseFileOutput();
 
 	while (!aFragmentReader.getStream().eof())
 	{
-		std::shared_ptr<FragmentPair> aFragmentPair = aFragmentReader.populateNextFragmentPair();
+		std::unique_ptr<FragmentPair> aFragmentPair;
+		aFragmentReader.populateNextFragmentPair(aFragmentPair);
 		if (aFragmentPair)
 		{
 			aFragmentWriter.printAndOrderFragmentPairToFile(aFragmentPair);
@@ -62,7 +63,9 @@ void lowMemory()
 
 int main()
 {
-	fast();
+	string aInput = "data/big-test.fastq";
 	
-	lowMemory();
+	//fast(aInput);
+	
+	//lowMemory(aInput);
 }

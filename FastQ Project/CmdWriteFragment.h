@@ -25,14 +25,14 @@ public:
 	void initialiseFileOutput();
 
 	//! Prints a multiset of fragment pairs to the currently opened file
-	void printDataSetToFile(const std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint);
+	void printDataSetToFile(const std::multiset<std::unique_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint);
 	//! Prints an individual fragment pair to the end of the currently opened file
-	void printFragmentPairToEndOfFile(const std::shared_ptr<FragmentPair>& item);
+	void printFragmentPairToEndOfFile(const std::unique_ptr<FragmentPair>& item);
 	//! Prints an individual fragment pair in the correct ordered place to the currently opened file
 	/*
 		O(n^2) time complexity: Bubble sort algorithm used
 	*/
-	void printAndOrderFragmentPairToFile(const std::shared_ptr<FragmentPair>& aFragmentPair);
+	void printAndOrderFragmentPairToFile(const std::unique_ptr<FragmentPair>& aFragmentPair);
 
 private:
 	string _aOutputFileName;

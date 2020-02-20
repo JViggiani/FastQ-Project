@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "CmdReadFragment.h"
 
-std::shared_ptr<Fragment> CmdReadFragment::populateNextFragment()
+void CmdReadFragment::populateNextFragment(std::unique_ptr<Fragment>& aFragment)
 {
-	std::shared_ptr<Fragment> aFragment(new Fragment());
+	aFragment.reset(new Fragment());
 	int aFragmentLineNum = 1;
 	for (string line;
 		aFragmentLineNum <= 4 && getline(_iStream, line) && !_iStream.eof();
@@ -21,43 +21,44 @@ std::shared_ptr<Fragment> CmdReadFragment::populateNextFragment()
 		switch (aFragmentLineNum)
 		{
 		case 1:
-			aFragment->_seqId = std::shared_ptr<char>(new char[line.length() + 1]);
+			aFragment->_seqId.reset(new char[line.length() + 1]);
 			strcpy(aFragment->_seqId.get(), line.c_str());
 			break;
 		case 2:
-			aFragment->_rawSequence = std::shared_ptr<char>(new char[line.length() + 1]);
+			aFragment->_rawSequence.reset(new char[line.length() + 1]);
 			strcpy(aFragment->_rawSequence.get(), line.c_str());
 			break;
 		case 3:
 			break;
 		case 4:
-			aFragment->_qualityValue = std::shared_ptr<char>(new char[line.length() + 1]);
+			aFragment->_qualityValue.reset(new char[line.length() + 1]);
 			strcpy(aFragment->_qualityValue.get(), line.c_str());
 			break;
 		}
 	}
 
-	if (aFragment && aFragment->_seqId && aFragment->_rawSequence && aFragment->_qualityValue)
+	if (!aFragment || !aFragment->_seqId || !aFragment->_rawSequence || !aFragment->_qualityValue)
 	{
 		//Only want to return complete fragments
-		return aFragment;
+		aFragment.reset(nullptr);
 	}
-	else return nullptr;
 }
 
-std::shared_ptr<FragmentPair> CmdReadFragment::populateNextFragmentPair()
+void CmdReadFragment::populateNextFragmentPair(std::unique_ptr<FragmentPair>& aFragmentPairPtr)
 {
-	std::shared_ptr<Fragment> aFragment1 = this->populateNextFragment();
-	std::shared_ptr<Fragment> aFragment2 = this->populateNextFragment();
+	std::unique_ptr<Fragment> aFragment1;
+	populateNextFragment(aFragment1);
+	std::unique_ptr<Fragment> aFragment2;
+	populateNextFragment(aFragment2);
 
 	if (aFragment1 && aFragment2)
 	{
-		std::shared_ptr<FragmentPair> aFragmentPair(new FragmentPair());
+		aFragmentPairPtr.reset(new FragmentPair()); //= make_unique<FragmentPair>(new FragmentPair());
 
-		aFragmentPair->_fragment1 = std::move(aFragment1); //JOSH a better way?
-		aFragmentPair->_fragment2 = std::move(aFragment2);
+		aFragmentPairPtr->_fragment1 = std::move(aFragment1); //JOSH a better way?
+		aFragmentPairPtr->_fragment2 = std::move(aFragment2);
 
-		return aFragmentPair;
+		//return aFragmentPair;
 	}
 	else
 	{
@@ -66,9 +67,12 @@ std::shared_ptr<FragmentPair> CmdReadFragment::populateNextFragmentPair()
 		if (aFollowingLine == "\n")
 		{
 			//get rid of new lines
-			return populateNextFragmentPair();
+			populateNextFragmentPair(aFragmentPairPtr);
 		}
-		else return nullptr;
+		else
+		{
+			aFragmentPairPtr.get() == nullptr;
+		}
 	}
 
 }
