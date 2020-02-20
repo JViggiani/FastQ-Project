@@ -8,28 +8,12 @@
 #include <iostream>
 #include <fstream>
 
-class CmdReadWriteFragment : public CmdReadFragment
+class CmdWriteFragment : public CmdReadFragment
 {
 public:
-	CmdReadWriteFragment(const string& aFile)
+	CmdWriteFragment(const string& aFileName)
 	{
-		FILE *file;
-		int file_exists;
-
-		file = fopen(aFile.c_str(), "r");
-		if (file == NULL)
-		{
-			file = fopen(aFile.c_str(), "w+b");
-		}
-		fclose(file);
-
-		file = fopen("data/temp.fastq", "r");
-		if (file != NULL)
-		{
-			remove("data/temp.fastq");
-		}
-
-		delete file;
+		this->_aOutputFileName = aFileName;
 	}
 	
 	std::ofstream& getStream()
@@ -37,12 +21,21 @@ public:
 		return _ioStream;
 	}
 
-	void printDataSetToFile(const std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint);
-	void printDataItemToFile(const std::shared_ptr<FragmentPair>& item);
+	//! Deletes old data from prior run outputs with the provided file name
+	void initialiseFileOutput();
 
-	void printFragmentPairToFileLowMemory(const std::shared_ptr<FragmentPair>& aFragmentPair);
+	//! Prints a multiset of fragment pairs to the currently opened file
+	void printDataSetToFile(const std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint);
+	//! Prints an individual fragment pair to the end of the currently opened file
+	void printFragmentPairToEndOfFile(const std::shared_ptr<FragmentPair>& item);
+	//! Prints an individual fragment pair in the correct ordered place to the currently opened file
+	/*
+		O(n^2) time complexity: Bubble sort algorithm used
+	*/
+	void printAndOrderFragmentPairToFile(const std::shared_ptr<FragmentPair>& aFragmentPair);
 
 private:
+	string _aOutputFileName;
 	std::ofstream _ioStream;
 };
 

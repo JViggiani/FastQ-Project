@@ -2,15 +2,33 @@
 #include "CmdReadWriteFragment.h"
 #include <filesystem>
 
-void CmdReadWriteFragment::printDataSetToFile(const std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint)
+void CmdWriteFragment::initialiseFileOutput()
+{
+	//delete temp if it exists
+	//delete output if it exists
+	//open output
+	//open temp
+
+	remove(_aOutputFileName.c_str());
+	remove("data/temp.fastq");
+
+	_ioStream.close();
+	_ioStream.open("data/temp.fastq");
+	
+	_ioStream.close();
+	_ioStream.open(_aOutputFileName.c_str());
+	_ioStream.close();
+}
+
+void CmdWriteFragment::printDataSetToFile(const std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint)
 {
 	for (auto item : aSetToPrint)
 	{
-		printDataItemToFile(item);
+		printFragmentPairToEndOfFile(item);
 	}
 }
 
-void CmdReadWriteFragment::printDataItemToFile(const std::shared_ptr<FragmentPair>& item)
+void CmdWriteFragment::printFragmentPairToEndOfFile(const std::shared_ptr<FragmentPair>& item)
 {
 	this->_ioStream << item->_fragment1->_seqId << "\n";
 	this->_ioStream << item->_fragment1->_rawSequence << "\n";
@@ -25,55 +43,51 @@ void CmdReadWriteFragment::printDataItemToFile(const std::shared_ptr<FragmentPai
 	this->_ioStream.flush();
 }
 
-void CmdReadWriteFragment::printFragmentPairToFileLowMemory(const std::shared_ptr<FragmentPair>& aFragmentPair)
+void CmdWriteFragment::printAndOrderFragmentPairToFile(const std::shared_ptr<FragmentPair>& aFragmentPair)
 {
-	//std::filesystem::copy_file("data/output.fastq", "data/temp.fastq");
-	//remove("data/output.fastq");
-
 	_ioStream.open("data/temp.fastq");
 
 	CmdReadFragment aFragmentReader;
 
-	aFragmentReader.getStream().open("data/output_memory.fastq");
+	aFragmentReader.getStream().open(_aOutputFileName.c_str());
 
 	bool hasWroteCurrentFragment = false;
 
 	while (!aFragmentReader.getStream().eof())
 	{
-		//JOSH problem is here. At the end of the file there are two new lines and so this gets executed at the end
 		std::shared_ptr<FragmentPair> aWrittenFragmentPair = aFragmentReader.populateNextFragmentPair();
 		
-		char c = aFragmentReader.getStream().peek(); //JOSH what is this at the end? newline?
+		char c = aFragmentReader.getStream().peek(); 
 
-		if (!aWrittenFragmentPair.get()) //JOSH && file is not at the end?? 
+		if (!aWrittenFragmentPair.get()) 
 		{
 			//First item, just write the fragmentpair
-			printDataItemToFile(aFragmentPair);
+			printFragmentPairToEndOfFile(aFragmentPair);
 			hasWroteCurrentFragment = true;
 			break;
 		}
 
 		if ((!hasWroteCurrentFragment && *(aFragmentPair.get()) > *(aWrittenFragmentPair.get())))
 		{
-			printDataItemToFile(aFragmentPair);
+			printFragmentPairToEndOfFile(aFragmentPair);
 			//Want to only print written from here
 			hasWroteCurrentFragment = true;
-			printDataItemToFile(aWrittenFragmentPair);
+			printFragmentPairToEndOfFile(aWrittenFragmentPair);
 		}
 		else
 		{
-			printDataItemToFile(aWrittenFragmentPair);
+			printFragmentPairToEndOfFile(aWrittenFragmentPair);
 			if (!hasWroteCurrentFragment)
 			{
-				printDataItemToFile(aFragmentPair);
+				printFragmentPairToEndOfFile(aFragmentPair);
 				hasWroteCurrentFragment = true;
 			}
 		}
 	}
-
-	//_ioStream.flush();
+	
 	_ioStream.close();
 	aFragmentReader.getStream().close();
-	int success = remove("data/output_memory.fastq");
-	std::filesystem::rename("data/temp.fastq", "data/output_memory.fastq");
+
+	remove(_aOutputFileName.c_str());
+	std::filesystem::rename("data/temp.fastq", _aOutputFileName.c_str());
 }

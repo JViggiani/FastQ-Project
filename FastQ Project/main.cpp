@@ -1,6 +1,3 @@
-// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include "pch.h"
 
 #include "Fragment.h"
@@ -9,10 +6,8 @@
 
 void fast()
 {
-	//string aFileName = "data/big-test.fastq";
-
 	CmdReadFragment aFragmentReader;
-	aFragmentReader.getStream().open("data/big-test.fastq");
+	aFragmentReader.getStream().open("data/tiny-test.fastq");
 
 	std::multiset<std::shared_ptr<FragmentPair>, FragmentPairComparitor> aFragmentPairSet;
 
@@ -28,7 +23,9 @@ void fast()
 
 	string output = "data/output_fast.fastq";
 
-	CmdReadWriteFragment aFragmentWriter(output);
+	CmdWriteFragment aFragmentWriter(output);
+
+	aFragmentWriter.initialiseFileOutput();
 
 	aFragmentWriter.getStream().open(output);
 
@@ -39,23 +36,21 @@ void fast()
 
 void lowMemory()
 {
-	string aFileName = "data/big-test.fastq";
-	string output = "data/output_memory.fastq";
-
-	remove(output.c_str());
-	remove("data/temp.fastq");
+	string aInput = "data/tiny-test.fastq";
+	string aOutput = "data/output_memory.fastq";
 
 	CmdReadFragment aFragmentReader;
-	aFragmentReader.getStream().open(aFileName);
-	CmdReadWriteFragment aFragmentWriter(output);
-	//aFragmentWriter.getStream().open(output);
+	aFragmentReader.getStream().open(aInput);
+
+	CmdWriteFragment aFragmentWriter(aOutput);
+	aFragmentWriter.initialiseFileOutput();
 
 	while (!aFragmentReader.getStream().eof())
 	{
 		std::shared_ptr<FragmentPair> aFragmentPair = aFragmentReader.populateNextFragmentPair();
 		if (aFragmentPair)
 		{
-			aFragmentWriter.printFragmentPairToFileLowMemory(aFragmentPair);
+			aFragmentWriter.printAndOrderFragmentPairToFile(aFragmentPair);
 		}
 	}
 
@@ -69,5 +64,5 @@ int main()
 {
 	fast();
 	
-	//lowMemory();
+	lowMemory();
 }
