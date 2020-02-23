@@ -36,6 +36,9 @@
     <ClInclude Include="CmdWriteFragment.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="FileThread.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

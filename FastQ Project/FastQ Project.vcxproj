@@ -40,6 +40,7 @@
     <ClInclude Include="CmdProcessFragment.h" />
     <ClInclude Include="CmdReadFragment.h" />
     <ClInclude Include="CmdWriteFragment.h" />
+    <ClInclude Include="FileThread.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Quality.h" />
