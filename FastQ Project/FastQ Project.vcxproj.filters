@@ -16,6 +16,9 @@
     <ClCompile Include="CmdWriteFragment.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="CmdMergeSort.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Fragment.h">
@@ -37,6 +40,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="FileThread.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdMergeSort.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
