@@ -33,7 +33,7 @@ public:
 
 		// Wait for all threads to stop
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-		std::cout << "Joining threads" << "\n";
+		//std::cout << "Joining threads" << "\n";
 		for (auto& thread : threads_)
 			thread.join();
 	}
@@ -65,12 +65,12 @@ protected:
 				{
 					// No jobs to do and we are shutting down
 					std::this_thread::sleep_for(std::chrono::seconds(1));
-					std::cout << "Thread " << i << " terminates" << "\n";
+					//std::cout << "Thread " << i << " terminates" << "\n";
 					return;
 				}
 
 				std::this_thread::sleep_for(std::chrono::seconds(1));
-				std::cout << "Thread " << i << " does a job" << "\n";
+				//std::cout << "Thread " << i << " does a job" << "\n";
 				job = std::move(jobs_.front());
 				jobs_.pop();
 			}

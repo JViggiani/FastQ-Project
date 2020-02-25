@@ -37,6 +37,7 @@
     <SourcePath>C:\Users\Josh\source\repos\FastQ-Project\FastQ Project\Source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="CmdMergeSort.h" />
     <ClInclude Include="CmdProcessFragment.h" />
     <ClInclude Include="CmdReadFragment.h" />
     <ClInclude Include="CmdWriteFragment.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="Quality.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmdMergeSort.cpp" />
     <ClCompile Include="CmdReadFragment.cpp" />
     <ClCompile Include="CmdWriteFragment.cpp" />
     <ClCompile Include="main.cpp" />
