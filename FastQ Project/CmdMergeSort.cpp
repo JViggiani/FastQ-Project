@@ -47,6 +47,7 @@ void CmdMergeSort::createFolder(int aFolderNum)
 	{
 		//std::this_thread::sleep_for(std::chrono::milliseconds(650));
 		//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ":  create directory for folder " << std::to_string(aFolderNum) << "\n";
+
 		filesystem::create_directory("data/temp/MERGEME/" + std::to_string(aFolderNum)); // create current folder
 	}
 }
@@ -71,6 +72,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 	CmdWriteFragment aFragmentWriter(aWrittenFileName);
 	aFragmentWriter.initialiseFileOutput();
 	aFragmentWriter.getStream().open(aWrittenFileName.c_str());
+
 	//std::this_thread::sleep_for(std::chrono::milliseconds(658));
 	//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Writing to file: " << aWrittenFileName << "\n";
 
@@ -86,6 +88,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 		{
 			//std::this_thread::sleep_for(std::chrono::milliseconds(758));
 			//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Printed current in last iteration, fetching from currentfile" << "\n";
+		
 			aCurrentPair.reset();
 			aCurrentFileReader.populateNextFragmentPair(aCurrentPair);
 		}
@@ -93,6 +96,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 		{
 			//std::this_thread::sleep_for(std::chrono::milliseconds(475));
 			//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Printed previous in last iteration, fetching from currentfile" << "\n";
+
 			aPreviousPair.reset();
 			aPreviousFileReader.populateNextFragmentPair(aPreviousPair);
 		}
@@ -104,6 +108,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 				aFragmentWriter.printFragmentPairToEndOfFile(aCurrentPair);
 				isPrintedCurrent = true;
 				isPrintedPrevious = false;
+				
 				//std::this_thread::sleep_for(std::chrono::milliseconds(785));
 				//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Current fragment greater, appended to written file" << "\n";
 			}
@@ -112,6 +117,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 				aFragmentWriter.printFragmentPairToEndOfFile(aPreviousPair);
 				isPrintedCurrent = false;
 				isPrintedPrevious = true;
+				
 				//std::this_thread::sleep_for(std::chrono::milliseconds(758));
 				//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Previous fragment greater, appended to written file" << "\n";
 			}
@@ -131,6 +137,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 			aFragmentWriter.printFragmentPairToEndOfFile(aPreviousPair);
 			isPrintedCurrent = false;
 			isPrintedPrevious = true;
+			
 			//std::this_thread::sleep_for(std::chrono::milliseconds(895));
 			//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Current fragment null, previous appended to written file" << "\n";
 		}
@@ -146,6 +153,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 		{
 			//std::this_thread::sleep_for(std::chrono::milliseconds(748));
 			//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Unknown condition, both fragments null" << "\n";
+
 			//we may get in here at some point, need to handle edge case.. end of files???
 			//exception e;
 			//throw e;
@@ -160,7 +168,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 	//remove read files
 	remove(aCurrentFullPath.c_str());
 	remove(aPreviousFullPath.c_str());
-
+	
 	//std::this_thread::sleep_for(std::chrono::milliseconds(694));
 	//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Reading complete. Deleting read files" << "\n";
 
@@ -306,6 +314,7 @@ void CmdMergeSort::mergeFolder(int aCurrentFolderNum)
 		//We have to set to 1 initially to allow for edge conditions at the start
 		int aTimesVisited = 1;
 		filesystem::directory_iterator aEnd;
+
 		for (filesystem::directory_iterator aIterator("data/temp/MERGEME/" + std::to_string(aCurrentFolderNum));
 			aIterator != aEnd;
 			++aIterator)

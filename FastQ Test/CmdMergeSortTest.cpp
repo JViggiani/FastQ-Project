@@ -1,13 +1,12 @@
 #include "pch.h"
-
 /*
 #include <functional>
 #include <fstream>
 #include <filesystem>
 #include <stdio.h>
 
-#include "CmdMergeSort.h"
-#include "CmdMergeSort.cpp"
+#include "../FastQ Project/CmdMergeSort.h"
+#include "../FastQ Project/CmdMergeSort.cpp"
 
 TEST(CmdMergeSort, CanMergeFiles)
 {
@@ -88,6 +87,5 @@ TEST(CmdMergeSort, CanMergeFiles)
 	int i;
 
 	aMerger.mergeFiles("data/2/2_1", "data/2/2_2", 2, i);
-
 }
 */

@@ -34,6 +34,7 @@ public:
 		// Wait for all threads to stop
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		//std::cout << "Joining threads" << "\n";
+
 		for (auto& thread : threads_)
 			thread.join();
 	}
