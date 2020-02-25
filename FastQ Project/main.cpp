@@ -67,7 +67,7 @@ void lowMemory(const string& aInput)
 	aFragmentWriter.getStream().close();
 }
 
-
+//JOSH try to run with CUDA
 int main()
 {
 	clock_t clkStart;

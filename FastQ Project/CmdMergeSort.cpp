@@ -157,6 +157,9 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 			//we may get in here at some point, need to handle edge case.. end of files???
 			//exception e;
 			//throw e;
+			//need to force a read for both JOSH is this buggy?
+			isPrintedCurrent = true;
+			isPrintedPrevious = true;
 		}
 		aFragmentWriter.getStream().flush();
 	}
@@ -201,7 +204,7 @@ CmdMergeSort::PreviousFolderStatus CmdMergeSort::checkIfPreviousFoldersPopulated
 bool CmdMergeSort::checkIfNextFoldersPopulated(const int& aCurrentFolderNum)
 {
 	bool aNextMergesStarted = false;
-	for (int i = aCurrentFolderNum + 1; i <= aCurrentFolderNum + (_numOfMergerThreads - 1); ++i)
+	for (int i = aCurrentFolderNum + 1; i <= aCurrentFolderNum + _numOfMergerThreads; ++i) //JOSH _numofmergerthreads - 1?
 	{
 		if (std::filesystem::exists("data/temp/MERGEME/" + std::to_string(i)) && !std::filesystem::is_empty("data/temp/MERGEME/" + std::to_string(i)))
 		{
@@ -250,31 +253,33 @@ CmdMergeSort::FileCountStatus CmdMergeSort::checkFileNumStatus(const int& aCurre
 
 CmdMergeSort::FolderStatus CmdMergeSort::checkFolderStatus(const int& aCurrentFolderNum)
 {
+	//JOSH tidy this up, we just want ot check current, previous and future folder status whether they are empty, deleted or populated.. can just use one enum 
+	
 	CmdMergeSort::PreviousFolderStatus aPreviousMergesFinishedStatus = checkIfPreviousFoldersPopulated(aCurrentFolderNum);
-	bool aNextMergesStarted = checkIfNextFoldersPopulated(aCurrentFolderNum);
+	bool aNextFoldersPopulated = checkIfNextFoldersPopulated(aCurrentFolderNum);
 	CmdMergeSort::FileCountStatus aFileCountStatus = checkFileNumStatus(aCurrentFolderNum);
 
 	bool aShouldStartNextMerge = 
 		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted || aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FinishedPreviousMerges) 
-			&& aNextMergesStarted && (aFileCountStatus == CmdMergeSort::FileCountStatus::Zero));
+			&& (aNextFoldersPopulated) && (aFileCountStatus == CmdMergeSort::FileCountStatus::Zero));
 	if (aShouldStartNextMerge)
 		return CmdMergeSort::FolderStatus::NextMerge;
 
 	bool aShouldMoveFile = 
 		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted) 
-			&& aNextMergesStarted && (aFileCountStatus == CmdMergeSort::FileCountStatus::Single));
+			&& aNextFoldersPopulated && (aFileCountStatus == CmdMergeSort::FileCountStatus::Single));
 	if (aShouldMoveFile)
 		return CmdMergeSort::FolderStatus::MoveNextMerge;
 
 	bool aShouldDoneThisThread = 
 		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted) 
-			&& !aNextMergesStarted && (aFileCountStatus == CmdMergeSort::FileCountStatus::Single));
+			&& !aNextFoldersPopulated && (aFileCountStatus == CmdMergeSort::FileCountStatus::Single));
 	if (aShouldDoneThisThread)
 		return CmdMergeSort::FolderStatus::DoneThisThread;
 
 	bool aShouldDoneOtherThread = 
 		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted) 
-			&& !aNextMergesStarted && (aFileCountStatus == CmdMergeSort::FileCountStatus::Zero));
+			&& !aNextFoldersPopulated && (aFileCountStatus == CmdMergeSort::FileCountStatus::Zero));
 	if (aShouldDoneOtherThread)
 		return CmdMergeSort::FolderStatus::DoneOtherThread;
 
