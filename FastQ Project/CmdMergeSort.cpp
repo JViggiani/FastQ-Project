@@ -56,6 +56,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 {
 	string aCurrentFullPath = "data/temp/MERGEME/" + std::to_string(aFolderNum) + "/" + aFile1;
 	string aPreviousFullPath = "data/temp/MERGEME/" + std::to_string(aFolderNum) + "/" + aFile2;
+	//string aLockFilePath = "data/temp/MERGEME/" + std::to_string(aFolderNum + 1) + "/" + aFile2;
 
 	//data/big-test.fastq
 	CmdReadFragment aCurrentFileReader;
@@ -70,6 +71,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 
 	string aWrittenFileName = "data/temp/MERGEME/" + std::to_string(aFolderNum + 1) + "/" + std::to_string(aFolderNum + 1) + "_" + std::to_string(aFileCounter);
 	CmdWriteFragment aFragmentWriter(aWrittenFileName);
+	//aFragmentWriter.lockFile(aWrittenFileName);
 	aFragmentWriter.initialiseFileOutput();
 	aFragmentWriter.getStream().open(aWrittenFileName.c_str());
 
@@ -88,7 +90,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 		{
 			//std::this_thread::sleep_for(std::chrono::milliseconds(758));
 			//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Printed current in last iteration, fetching from currentfile" << "\n";
-		
+
 			aCurrentPair.reset();
 			aCurrentFileReader.populateNextFragmentPair(aCurrentPair);
 		}
@@ -108,7 +110,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 				aFragmentWriter.printFragmentPairToEndOfFile(aCurrentPair);
 				isPrintedCurrent = true;
 				isPrintedPrevious = false;
-				
+
 				//std::this_thread::sleep_for(std::chrono::milliseconds(785));
 				//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Current fragment greater, appended to written file" << "\n";
 			}
@@ -117,7 +119,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 				aFragmentWriter.printFragmentPairToEndOfFile(aPreviousPair);
 				isPrintedCurrent = false;
 				isPrintedPrevious = true;
-				
+
 				//std::this_thread::sleep_for(std::chrono::milliseconds(758));
 				//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Previous fragment greater, appended to written file" << "\n";
 			}
@@ -137,7 +139,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 			aFragmentWriter.printFragmentPairToEndOfFile(aPreviousPair);
 			isPrintedCurrent = false;
 			isPrintedPrevious = true;
-			
+
 			//std::this_thread::sleep_for(std::chrono::milliseconds(895));
 			//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Current fragment null, previous appended to written file" << "\n";
 		}
@@ -158,8 +160,8 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 			//exception e;
 			//throw e;
 			//need to force a read for both JOSH is this buggy?
-			isPrintedCurrent = true;
-			isPrintedPrevious = true;
+			//isPrintedCurrent = true;
+			//isPrintedPrevious = true;
 		}
 		aFragmentWriter.getStream().flush();
 	}
@@ -171,7 +173,7 @@ void CmdMergeSort::mergeFiles(const string& aFile1, const string& aFile2, const 
 	//remove read files
 	remove(aCurrentFullPath.c_str());
 	remove(aPreviousFullPath.c_str());
-	
+
 	//std::this_thread::sleep_for(std::chrono::milliseconds(694));
 	//std::cout << "DEBUG - " << std::to_string(aFolderNum) << ": Reading complete. Deleting read files" << "\n";
 
@@ -183,14 +185,14 @@ CmdMergeSort::PreviousFolderStatus CmdMergeSort::checkIfPreviousFoldersPopulated
 	CmdMergeSort::PreviousFolderStatus aPreviousFolderStatus = CmdMergeSort::PreviousFolderStatus::FinishedPreviousMerges;
 
 	for (int i = aCurrentFolderNum - 1; i > (aCurrentFolderNum - (_numOfMergerThreads + 1)) && i > 0; --i)
-	{		
-		if(!std::filesystem::exists("data/temp/MERGEME/" + std::to_string(i)))
+	{
+		if (!std::filesystem::exists("data/temp/MERGEME/" + std::to_string(i)))
 		{
 			//A folder got deleted, a thread is claiming to have finished merging
 			aPreviousFolderStatus = CmdMergeSort::PreviousFolderStatus::FolderDeleted;
 			break;
 		}
-		
+
 		if (!std::filesystem::is_empty("data/temp/MERGEME/" + std::to_string(i)))
 		{
 			//still more to do from previous folders
@@ -204,7 +206,7 @@ CmdMergeSort::PreviousFolderStatus CmdMergeSort::checkIfPreviousFoldersPopulated
 bool CmdMergeSort::checkIfNextFoldersPopulated(const int& aCurrentFolderNum)
 {
 	bool aNextMergesStarted = false;
-	for (int i = aCurrentFolderNum + 1; i <= aCurrentFolderNum + _numOfMergerThreads; ++i) //JOSH _numofmergerthreads - 1?
+	for (int i = aCurrentFolderNum + 1; i <= aCurrentFolderNum + (_numOfMergerThreads - 1); ++i) //JOSH _numofmergerthreads - 1?
 	{
 		if (std::filesystem::exists("data/temp/MERGEME/" + std::to_string(i)) && !std::filesystem::is_empty("data/temp/MERGEME/" + std::to_string(i)))
 		{
@@ -254,31 +256,31 @@ CmdMergeSort::FileCountStatus CmdMergeSort::checkFileNumStatus(const int& aCurre
 CmdMergeSort::FolderStatus CmdMergeSort::checkFolderStatus(const int& aCurrentFolderNum)
 {
 	//JOSH tidy this up, we just want ot check current, previous and future folder status whether they are empty, deleted or populated.. can just use one enum 
-	
+
 	CmdMergeSort::PreviousFolderStatus aPreviousMergesFinishedStatus = checkIfPreviousFoldersPopulated(aCurrentFolderNum);
 	bool aNextFoldersPopulated = checkIfNextFoldersPopulated(aCurrentFolderNum);
 	CmdMergeSort::FileCountStatus aFileCountStatus = checkFileNumStatus(aCurrentFolderNum);
 
-	bool aShouldStartNextMerge = 
-		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted || aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FinishedPreviousMerges) 
+	bool aShouldStartNextMerge =
+		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted || aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FinishedPreviousMerges)
 			&& (aNextFoldersPopulated) && (aFileCountStatus == CmdMergeSort::FileCountStatus::Zero));
 	if (aShouldStartNextMerge)
 		return CmdMergeSort::FolderStatus::NextMerge;
 
-	bool aShouldMoveFile = 
-		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted) 
+	bool aShouldMoveFile =
+		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted)
 			&& aNextFoldersPopulated && (aFileCountStatus == CmdMergeSort::FileCountStatus::Single));
 	if (aShouldMoveFile)
 		return CmdMergeSort::FolderStatus::MoveNextMerge;
 
-	bool aShouldDoneThisThread = 
-		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted) 
+	bool aShouldDoneThisThread =
+		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted)
 			&& !aNextFoldersPopulated && (aFileCountStatus == CmdMergeSort::FileCountStatus::Single));
 	if (aShouldDoneThisThread)
 		return CmdMergeSort::FolderStatus::DoneThisThread;
 
-	bool aShouldDoneOtherThread = 
-		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted) 
+	bool aShouldDoneOtherThread =
+		((aPreviousMergesFinishedStatus == CmdMergeSort::PreviousFolderStatus::FolderDeleted)
 			&& !aNextFoldersPopulated && (aFileCountStatus == CmdMergeSort::FileCountStatus::Zero));
 	if (aShouldDoneOtherThread)
 		return CmdMergeSort::FolderStatus::DoneOtherThread;
@@ -335,6 +337,7 @@ void CmdMergeSort::mergeFolder(int aCurrentFolderNum)
 
 				string aCurrentFileName = aIterator->path().string().substr(aIterator->path().string().find("\\") + 1);
 
+				//if(aCurrentFileName != ".lock" && aPreviousFileName != ".lock")
 				mergeFiles(aCurrentFileName, aPreviousFileName, aCurrentFolderNum, aFileCounter);
 
 				aTimesVisited = 0;
@@ -355,9 +358,9 @@ void CmdMergeSort::mergeFolder(int aCurrentFolderNum)
 
 		/*
 		if previous merges done and only one currently, we are finished the whole merge
-		else if 
+		else if
 		*/
-		
+
 		//JOSH add an exception check here for if there is one file in this folder and none in previous folders. If so, just move the file into the next folder
 
 		//if(aPreviousMergesFinished)
@@ -379,7 +382,7 @@ void CmdMergeSort::mergeFolder(int aCurrentFolderNum)
 		filesystem::remove(aCurrentDir);
 		mergeFolder(aCurrentFolderNum + _numOfMergerThreads);
 	}
-	else if(aFolderStatus == CmdMergeSort::FolderStatus::DoneThisThread)
+	else if (aFolderStatus == CmdMergeSort::FolderStatus::DoneThisThread)
 	{
 		//We are done and have the last file 
 		//rename directory
