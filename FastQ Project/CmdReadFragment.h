@@ -18,6 +18,8 @@ public:
 		return _iStream;
 	}
 
+	bool isFragmentFileLocked(const string& _outputFolder, const int& aFolderNum, const string& aFile1);
+
 	void populateNextFragment(std::unique_ptr<Fragment>& aFragmentPtr);
 
 	void populateNextFragmentPair(std::unique_ptr<FragmentPair>& aFragmentPairPtr);

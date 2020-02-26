@@ -28,13 +28,14 @@ void fast(const string& aInput)
 	}
 	aFragmentReader.getStream().close();
 
-	string output = "data/output_fast.fastq";
+	string aOutputFile = "output_fast.fastq";
+	string aOutputFolder = "data";
 
-	CmdWriteFragment aFragmentWriter(output);
+	CmdWriteFragment aFragmentWriter(aOutputFile, aOutputFolder);
 
 	aFragmentWriter.initialiseFileOutput();
 
-	aFragmentWriter.getStream().open(output);
+	aFragmentWriter.getStream().open(aOutputFile);
 
 	aFragmentWriter.printDataSetToFile(aFragmentPairSet);
 
@@ -43,12 +44,13 @@ void fast(const string& aInput)
 
 void lowMemory(const string& aInput)
 {
-	string aOutput = "data/output_memory.fastq";
+	string aOutputFile = "data/output_memory.fastq";
+	string aOutputFolder = "data";
 
 	CmdReadFragment aFragmentReader;
 	aFragmentReader.getStream().open(aInput.c_str());
 
-	CmdWriteFragment aFragmentWriter(aOutput);
+	CmdWriteFragment aFragmentWriter(aOutputFile, aOutputFolder);
 	aFragmentWriter.initialiseFileOutput();
 
 	while (!aFragmentReader.getStream().eof())
@@ -75,14 +77,17 @@ int main()
 
 	clkStart = clock();
 	
-	string aInput = "data/big-test.fastq";
-	string aOutput = "data/output_threadedmerge";
+	string aInputFolder = "data";
+	string aInputFile = "big-test.fastq";
+	string aOutputFolder = "data";
+	string aOutputFile = "output_mergesort.fastq";
 	
 	//fast(aInput);
 	
 	//lowMemory(aInput);
 	
-	CmdMergeSort aMergeSorter(aInput, aOutput, 4);
+	//3 folder manager threads seems to be the optimal solution
+	CmdMergeSort aMergeSorter(aInputFolder, aInputFile, aOutputFolder, aOutputFile, 3);
 	aMergeSorter.execute();
 
 	clkFinish = clock();

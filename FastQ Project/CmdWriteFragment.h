@@ -10,15 +10,18 @@
 
 class CmdWriteFragment : public CmdReadFragment
 {
-public:
-	CmdWriteFragment(const string& aFileName)
+public:	
+	CmdWriteFragment(const string& aFileName, const string& aOutputFolder)
 	{
-		this->_aOutputFileName = aFileName;
-	}
+		this->_outputFile = aFileName;
+		this->_outputFolder = aOutputFolder;
+ 	}
+
+	CmdWriteFragment() = default;
 	
 	std::ofstream& getStream()
 	{
-		return _ioStream;
+		return _oStream;
 	}
 
 	//! Deletes old data from prior run outputs with the provided file name
@@ -34,8 +37,14 @@ public:
 	*/
 	void printAndOrderFragmentPairToFile(const std::unique_ptr<FragmentPair>& aFragmentPair);
 
+	void lockFragmentFile(const string& _outputFolder, const int& aFolderNum, const string& aFile1);
+	void unlockFragmentFile(const string& _outputFolder, const int& aFolderNum);
+
+	void printToEndOfFile(CmdReadFragment& aFileToRead);
+
 private:
-	string _aOutputFileName;
-	std::ofstream _ioStream;
+	string _outputFile;
+	string _outputFolder;
+	std::ofstream _oStream;
 };
 

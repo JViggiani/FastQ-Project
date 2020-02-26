@@ -1,6 +1,30 @@
 #include "pch.h"
 #include "CmdReadFragment.h"
 
+bool CmdReadFragment::isFragmentFileLocked(const string & _outputFolder, const int & aFolderNum, const string & aFile1)
+{
+	_iStream.close();
+	this->_iStream.open(_outputFolder + "/temp/MERGEME/" + std::to_string(aFolderNum) + "/lockfile");
+	if (_iStream.fail())
+	{
+		_iStream.close();
+		return false;
+	}
+	else
+	{
+		string aLockLine;
+		getline(_iStream, aLockLine);
+		if (aLockLine == aFile1)
+		{
+			_iStream.close();
+			return true;
+		}
+	}
+	
+	_iStream.close();
+	return false;
+}
+
 void CmdReadFragment::populateNextFragment(std::unique_ptr<Fragment>& aFragment)
 {
 	aFragment.reset(new Fragment());

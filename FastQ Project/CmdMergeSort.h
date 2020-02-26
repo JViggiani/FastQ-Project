@@ -8,23 +8,58 @@
 class CmdMergeSort
 {
 public:
-	CmdMergeSort(const string& aInputFile, const string& aOutput, const int& aNumberOfThreads)
+	CmdMergeSort(const string& aInputFolder, const string& aInputFile, const string& aOutputFolder, const string& aOutputFile, const int& aNumberOfThreads)
 	{
-		_inputFile = aInputFile;
-		_output = aOutput;
+		//police string format - we want to remove the slash between file and folder. We will handle this internally
+		
+		if (&aInputFolder.back() == "/")
+		{
+			_inputFolder = string(aInputFolder.begin(), aInputFolder.end() - 1);
+		}
+		else
+		{
+			_inputFolder = aInputFolder;
+		}
+
+		if (&aInputFile.front() == "/")
+		{
+			_inputFile = string(aInputFile.begin() + 1, aInputFile.end());
+		}
+		else
+		{
+			_inputFile = aInputFile;
+		}
+
+		if (&aOutputFolder.back() == "/")
+		{
+			_outputFolder = string(aOutputFolder.begin(), aOutputFolder.end() - 1);
+		}
+		else
+		{
+			_outputFolder = aOutputFolder;
+		}
+
+		if (&aOutputFile.front() == "/")
+		{
+			_outputFile = string(aOutputFile.begin() + 1, aOutputFile.end());
+		}
+		else
+		{
+			_outputFile = aOutputFile;
+		}
+		
 		//record number of merger threads
 		_numOfMergerThreads = aNumberOfThreads;
 
-		if (std::filesystem::exists("data/temp"))
+		if (std::filesystem::exists(_outputFolder + "/temp"))
 		{
-			std::filesystem::remove_all("data/temp");
+			std::filesystem::remove_all(_outputFolder + "/temp");
 		}
-		std::filesystem::remove_all(_output);
 	}
 
 	~CmdMergeSort()
 	{
-		std::filesystem::remove_all("data/temp");
+		std::filesystem::remove_all(_outputFolder + "/temp");
 	}
 
 	//Need at least two threads to execute. One to split and one to merge.
@@ -72,7 +107,9 @@ private:
 
 	FolderStatus checkFolderStatus(const int& aCurrentFolderNum);
 
+	string _inputFolder;
 	string _inputFile;
-	string _output;
+	string _outputFolder;
+	string _outputFile;
 	int _numOfMergerThreads;
 };

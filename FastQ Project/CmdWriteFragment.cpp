@@ -2,6 +2,8 @@
 #include "CmdWriteFragment.h"
 #include <filesystem>
 
+
+//JOSH delete this function and just start opening and closing 
 void CmdWriteFragment::initialiseFileOutput()
 {
 	//delete temp if it exists
@@ -9,15 +11,11 @@ void CmdWriteFragment::initialiseFileOutput()
 	//open output
 	//open temp
 
-	remove(_aOutputFileName.c_str());
-	remove("data/temp.fastq");
-
-	_ioStream.close();
-	_ioStream.open("data/temp.fastq");
+	remove(_outputFile.c_str());
 	
-	_ioStream.close();
-	_ioStream.open(_aOutputFileName.c_str());
-	_ioStream.close();
+	_oStream.close();
+	_oStream.open(_outputFile.c_str());
+	_oStream.close();
 }
 
 void CmdWriteFragment::printDataSetToFile(const std::multiset<std::unique_ptr<FragmentPair>, FragmentPairComparitor>& aSetToPrint)
@@ -30,26 +28,26 @@ void CmdWriteFragment::printDataSetToFile(const std::multiset<std::unique_ptr<Fr
 
 void CmdWriteFragment::printFragmentPairToEndOfFile(const std::unique_ptr<FragmentPair>& item)
 {
-	this->_ioStream << item->_fragment1->_seqId << "\n";
-	this->_ioStream << item->_fragment1->_rawSequence << "\n";
-	this->_ioStream << "+" << "\n";
-	this->_ioStream << item->_fragment1->_qualityValue << "\n";
+	this->_oStream << item->_fragment1->_seqId << "\n";
+	this->_oStream << item->_fragment1->_rawSequence << "\n";
+	this->_oStream << "+" << "\n";
+	this->_oStream << item->_fragment1->_qualityValue << "\n";
 
-	this->_ioStream << item->_fragment2->_seqId << "\n";
-	this->_ioStream << item->_fragment2->_rawSequence << "\n";
-	this->_ioStream << "+" << "\n";
-	this->_ioStream << item->_fragment2->_qualityValue << "\n";
+	this->_oStream << item->_fragment2->_seqId << "\n";
+	this->_oStream << item->_fragment2->_rawSequence << "\n";
+	this->_oStream << "+" << "\n";
+	this->_oStream << item->_fragment2->_qualityValue << "\n";
 
-	this->_ioStream.flush();
+	this->_oStream.flush();
 }
 
 void CmdWriteFragment::printAndOrderFragmentPairToFile(const std::unique_ptr<FragmentPair>& aFragmentPair)
 {
-	_ioStream.open("data/temp.fastq");
+	_oStream.open(_outputFolder + "/temp.fastq");
 
 	CmdReadFragment aFragmentReader;
 
-	aFragmentReader.getStream().open(_aOutputFileName.c_str());
+	aFragmentReader.getStream().open(_outputFile.c_str());
 
 	bool hasWroteCurrentFragment = false;
 
@@ -86,9 +84,36 @@ void CmdWriteFragment::printAndOrderFragmentPairToFile(const std::unique_ptr<Fra
 		}
 	}
 	
-	_ioStream.close();
+	_oStream.close();
 	aFragmentReader.getStream().close();
 
-	remove(_aOutputFileName.c_str());
-	std::filesystem::rename("data/temp.fastq", _aOutputFileName.c_str());
+	remove(_outputFile.c_str());
+	std::filesystem::rename(_outputFolder + "/temp.fastq", _outputFile.c_str());
+}
+
+void CmdWriteFragment::lockFragmentFile(const string & aOutputFolder, const int & aCurrentFolderNum, const string & aFile1)
+{
+	_oStream.close();
+	_oStream.open(aOutputFolder + "/temp/MERGEME/" + std::to_string(aCurrentFolderNum + 1) + "/lockfile", ios::trunc);
+	_oStream << aFile1;
+	_oStream.flush();
+	_oStream.close();
+}
+
+void CmdWriteFragment::unlockFragmentFile(const string & aOutputFolder, const int & aCurrentFolderNum)
+{
+	_oStream.close();
+	_oStream.open(aOutputFolder + "/temp/MERGEME/" + std::to_string(aCurrentFolderNum + 1) + "/lockfile", ios::trunc);
+	_oStream.flush();
+	_oStream.close();
+}
+
+void CmdWriteFragment::printToEndOfFile(CmdReadFragment & aFileToRead)
+{
+	while (aFileToRead.getStream().eof())
+	{
+		std::unique_ptr<FragmentPair> aPair;
+		aFileToRead.populateNextFragmentPair(aPair);
+		this->printFragmentPairToEndOfFile(aPair);
+	}
 }
